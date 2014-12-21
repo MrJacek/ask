@@ -5,9 +5,8 @@
 invertstr:
 ; prolog
     push    ebp ; zapamiętanie wskaźnika ramki procedury wołającej
-    push    ebx    
     mov     ebp, esp ; ustanowienie własnego wskaźnika ramki
-    
+    push    ebx    
 ; procedura nie alokuje danych lokalnych na stosie
 
 ; ciało procedury
@@ -22,12 +21,12 @@ lop1:
     
 lop2:
     
-   ; mov dl,[ecx]
-   ; mov bl,[eax]
-   ; mov [ecx],dl
-   ; mov [eax],bl
-    test eax,ecx
-    jge end
+    cmp ecx,eax
+    jae end
+    mov dl,[ecx]
+    mov bl,[eax]
+    mov [ecx],bl
+    mov [eax],dl
     inc ecx
     dec eax
     jmp lop2
