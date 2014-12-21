@@ -17,8 +17,8 @@ lop1:
     inc     eax             ; inkrementacja adresu
     test    dl, dl          ; test czy bajt = 0
     jnz     lop1            ; nie – następny bajt
-    dec     eax             ; cofnięcie wskaźnika o 1, mamy koniec łańcucha
-    
+    dec     eax             ; cofnięcie wskaźnika o 1, mamy koniec łańcucha 
+    dec     eax
 lop2:
     
     cmp ecx,eax
