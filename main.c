@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 int result=0;
-void invertstr(const char* str);
+void removeNumber(const char* str);
 
 int main( int argc, const char* argv[] )
 {
@@ -11,7 +11,7 @@ int main( int argc, const char* argv[] )
     printf("Enter string: ");
     gets(str);
     
-    invertstr(str);
+    removeNumber(str);
     printf("inver string: %s\n",str);
 
     return 0;
