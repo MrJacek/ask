@@ -60,8 +60,8 @@ dodaj:
     sub     dl,48
     mov     [ebp-20],eax
     mov     eax,0
-    ;mov     al,10
-    ;mul     cx
+    mov     al,10
+    mul     cl
     add     al,dl
     add     cx,ax
     mov     eax,[ebp-20]
