@@ -7,10 +7,7 @@ removeNumber:
     push    ebp ; zapamiętanie wskaźnika ramki procedury wołającej
     mov     ebp, esp ; ustanowienie własnego wskaźnika ramki
 ; procedura nie alokuje danych lokalnych na stosie
-    sub     esp,4
-    sub     esp,8
-    sub     esp,8 ; akumulator
-    sub     esp,1
+    sub     esp,16 ; adres najwiekszej ebp-8
 ; zwalnianie rejestrów
     push    ebx    
     push    esi
@@ -18,59 +15,59 @@ removeNumber:
     ; ecx asdress
 ; ciało procedury
     mov     eax, [ebp+8]    ; argument – wskaźnik na łańcuch
-    mov     edx,0
-    mov     [ebp-4],dx
-    mov     [ebp-12],edx
-    mov     edx,0
-    mov     ecx,0
-    mov     si,0
-    mov     [ebp-13],dh
+    mov     ebx,0  ; najwieksza
+    mov	    [ebp-8],ebx
+    mov     [ebp-16],ebx
+    mov     ecx,0  ; adress
+    mov     edx,0  ; znak i flaga
+    mov     esi,10 ; mnozenie
+    mov	    edi,0  ; mnozenie
+    mov     dh,1
+
+;==================================
+
 lop1:
     mov     dl, [eax]       ; kolejny bajt łańcucha
-    test     dl,dl
+    test    dl,dl
     jz      lop2init
     cmp     dl, ':'
     jge     lop12
     cmp     dl, '/'
-    jbe     lop12
+    jnbe    zapisz
 ;    mov     ebx,eax
-
-    jmp     zapisz
+;    jmp     zapisz
 lop12:
-    mov     dh,0
-    mov     [ebp-13],dh
-    cmp     cx,[ebp-4]
-    jb     lop13
-    mov     [ebp-4],cx 
-    mov     [ebp-12],ebx
-    mov     cx,0
-
+    cmp     dh,1
+    je      lop121 
+lop121:    
+    mov     dh,1
+    cmp     [ebp-16],ecx
+    jnbe     lop13
+    mov     [ebp-16],ecx 
+    mov     [ebp-8],ebx
+    mov     ecx,0
 lop13:
     inc     eax
     jmp     lop1
 
 ;==================================
 zapisz:
-    mov     dh,1
-    cmp     [ebp-13],dh ;Sprawdzamy czy jest kontnuacja liczby
+    cmp     dh,0 ;Sprawdzamy czy jest kontnuacja liczby
     je      dodaj ; jesli tak to przechodzimy do dodawani jej wartosci
     mov     ebx,eax ; jak nie to zapisujem adres poczatkowy tej liczby
-    mov     [ebp-13],dh ; ustawiamy flage
+    mov     dh,0 ; ustawiamy flage
 dodaj:
     sub     dl,48
-    mov     [ebp-20],eax
-    mov     eax,0
-    mov     al,10
-    mul     cl
-    add     al,dl
-    add     cx,ax
-    mov     eax,[ebp-20]
+    mov     esi,10
+    imul    ecx,esi
+    movzx   edi,dl
+    add     ecx,edi
     jmp     lop13
-    
 
 ;=================================
 lop2init:
-    mov     ebx,[ebp-12]
+   
+    mov     esi,[ebp-8]
     mov     eax,[ebp+8]
     mov     ecx,eax
     mov     dh,0
@@ -80,12 +77,12 @@ lop2:
     test    dl, dl
     jz      end
 
-    cmp     eax,ebx
+    cmp     eax,esi
     je      flaga
-    cmp     dl, ':'
-    jge     lop20
-    cmp     dl, '/'
-    jbe     lop20
+    cmp     dl, '9'
+    ja     lop20
+    cmp     dl, '0'
+    jb     lop20
     cmp     dh,1
     je      lop22
 lop20:
@@ -101,11 +98,11 @@ flaga:
     mov     dh,1
     jmp     lop22
 
-
 ; epilog
 end:
     mov     dl,0
     mov     [ecx],dl
+    mov	    eax,[ebp-16]
 ;   przywrucenie rejestrow
     pop     edi
     pop     esi

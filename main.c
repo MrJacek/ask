@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 int result=0;
-void removeNumber(const char* str);
+int removeNumber(const char* str);
 
 int main( int argc, const char* argv[] )
 {
@@ -15,8 +15,8 @@ int main( int argc, const char* argv[] )
     str[10]=0;
 **/
     scanf("%s",str);
-    removeNumber(str);
-    printf("%s <=== result\n",str);
+    int r=removeNumber(str);
+    printf("%s <=== result: r=%d\n",str,r);
 
     return 0;
 }
