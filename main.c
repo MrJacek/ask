@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-void mirrorbmp1(void* image,int width,int hight);
+int mirrorbmp1(void* image,int width,int hight);
 
 
 int main(int argc, char *argv[]) 
@@ -72,10 +72,12 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 	int htmp=*hight/32;
+
 	int wtmp=*width/32;
 	
 	//Wywołanie odbicia
-	mirrorbmp1(content,wtmp,htmp);
+	unsigned int r=mirrorbmp1(content,wtmp,htmp);
+        printf("r=%04x\n",r);
 	
 	save_file_from_memory(size, &content);
 	return 0;

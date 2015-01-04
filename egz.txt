@@ -1,0 +1,6 @@
+Adresowanie: opisac, ktore sa niezbedne,ktore zbedne i dla czego
+Stronicowanie:
+Potoki:
+Taksonomie: wypisac tabelki, opisac obie o co w nich chodzi
+
+
