@@ -19,35 +19,31 @@ mirrorbmp1:
 	mov		edi,0
 	
 	
-	mov		ecx,[ebp+12] ; pobieram szerokosc obrazka
 	mov		esi,[ebp+16] ; pobieram wysokosc obrazka
-	mov		edi,0
-	mov		edx,0
-	mov		ebx,ecx
-	mov		eax,8
-	div		ebx
+	mov		eax,[ebp+12] ; pobieram szerokosc obrazka
+	
+	mov		ecx,8
+	div		ecx
 	cmp		edx,0
 	je		go
 	inc		eax
 go:
-	mov		esi,edx
+	mov		ecx,eax
+	mov		edx,eax
 	mov		ebx,[ebp+8]	; pobieram pierwszy parametr wskaźnik obrazu
 	add		ebx,22
-	
-	mov		eax,0
 	
 lop:
 	mov		al,[ebx]
 	not		al
 	mov		[ebx],al
 	add		ebx,1
-	dec		esi
-	cmp		esi,0
-	jne		lop
-	mov		esi,edx
 	dec		ecx
 	cmp		ecx,0
-	
+	jne		lop
+	mov		ecx,edx
+	dec		esi
+	cmp		esi,0
 	jne		lop
 ; epilog
 end:
