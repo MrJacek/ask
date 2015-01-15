@@ -33,13 +33,10 @@ int main(int argc, char *argv[])
 		printf("mamy %u!\n",headersize);
 		return 0;
 	}
+	bytes[0]=*(content+28);
+	bytes[1]=*(content+29);
 	
-	
-	bytes[0] = *(content+18);
-	bytes[1] = *(content+19);
-	bytes[2] = *(content+20);
-	bytes[3] = *(content+21);
-	width = (int*)bytes;
+	width = (int*)(content+18);
 	
 	if( *width < 0)
 	{
@@ -49,11 +46,8 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 	printf("Szerokość: %d\n",*width);
-	bytes[0] = *(content+22);
-	bytes[1] = *(content+23);
-	bytes[2] = *(content+24);
-	bytes[3] = *(content+25);
-	hight=(int*)bytes;
+	
+	hight=(int*)(content+22);
 	if( *hight < 0)
 	{
 		printf("nieprawidłowa wysokość obrazu!\n");
@@ -71,13 +65,15 @@ int main(int argc, char *argv[])
 		printf("mamy %hi!\n",bpp);
 		return 0;
 	}
-	int htmp=*hight/32;
-
-	int wtmp=*width/32;
 	
-	//Wywołanie odbicia
-	unsigned int r=mirrorbmp1(content,wtmp,htmp);
-        printf("r=%04x\n",r);
+	
+	int htmp=(*hight);
+	int wtmp=(*width);
+
+	
+	//int mirrorbmp1(void* image,int width,int hight);
+	unsigned int r=mirrorbmp1((content+headersize),wtmp,htmp);
+        printf("r=%d\n",r);
 	
 	save_file_from_memory(size, &content);
 	return 0;
