@@ -73,8 +73,8 @@ int main(int argc, char *argv[])
 	
 	//int mirrorbmp1(void* image,int width,int hight);
 	unsigned int r=mirrorbmp1((content+headersize),wtmp,htmp);
-        printf("eax=%s\n",byte_to_binary(r));
-	
+    //printf("eax=%s\n",byte_to_binary(r));
+	printf("eax=%d\n",r);
 	save_file_from_memory(size, &content);
 	return 0;
 }
