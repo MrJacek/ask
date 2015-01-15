@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 int mirrorbmp1(void* image,int width,int hight);
-
+const char *byte_to_binary(int x);
 
 int main(int argc, char *argv[]) 
 {
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 	
 	//int mirrorbmp1(void* image,int width,int hight);
 	unsigned int r=mirrorbmp1((content+headersize),wtmp,htmp);
-        printf("r=%d\n",r);
+        printf("eax=%s\n",byte_to_binary(r));
 	
 	save_file_from_memory(size, &content);
 	return 0;
@@ -108,6 +108,20 @@ int load_file_to_memory(char *filename, char **result)
 	fclose(f);
 	(*result)[size] = 0;
 	return size;
+}
+
+const char *byte_to_binary(int x)
+{
+    static char b[9];
+    b[0] = '\0';
+
+    int z;
+    for (z = 128; z > 0; z >>= 1)
+    {
+        strcat(b, ((x & z) == z) ? "1" : "0");
+    }
+
+    return b;
 }
 
 int save_file_from_memory(int size, char **content)

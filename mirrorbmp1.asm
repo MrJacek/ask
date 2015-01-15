@@ -22,29 +22,39 @@ mirrorbmp1:
 	mov		esi,[ebp+16] ; pobieram wysokosc obrazka
 	mov		eax,[ebp+12] ; pobieram szerokosc obrazka
 	
-	mov		ecx,8
+	mov		ecx,32
 	div		ecx
 	cmp		edx,0
 	je		go
 	inc		eax
 go:
-	mov		ecx,eax
-	mov		edx,eax
+	mov		[ebp-4],eax
+	
+	;mov		edx,0
+	;mov		eax,esi
+	;mov		ecx,[ebp+16]
+	;mul		ecx
+
+	mov		ecx,[ebp-4]
+	mov		edx,ecx
 	mov		ebx,[ebp+8]	; pobieram pierwszy parametr wskaźnik obrazu
 	add		ebx,22
 	
+	;add		ebx,512
+
+	
 lop:
-	mov		al,[ebx]
-	not		al
-	mov		[ebx],al
-	add		ebx,1
+	mov		eax,[ebx]
+	not		eax
+	mov		[ebx],eax
+	add		ebx,4
 	dec		ecx
 	cmp		ecx,0
-	jne		lop
+	ja		lop
 	mov		ecx,edx
 	dec		esi
 	cmp		esi,0
-	jne		lop
+	ja		lop
 ; epilog
 end:
 ;   przywrucenie rejestrow
