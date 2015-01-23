@@ -1,19 +1,20 @@
 #include <stdio.h>
 
 int mirrorbmp1(void* image,int width,int hight);
-const char *byte_to_binary(int x);
+char *int2bin(int a, char *buffer, int buf_size);
 
+#define BUF_SIZE 33
 int main(int argc, char *argv[]) 
 {
 	unsigned char *content; 
 	char *path;
-	int size;
-	int level;
 	int* width;
 	int* hight;
+	int size;
 	unsigned int headersize;
-	short int bpp;
 	char bytes[4];
+	char buffer[BUF_SIZE];
+	buffer[BUF_SIZE - 1] = '\0';
 	
 	if (argc < 2) {
         printf("wymagane podanie 1 parametr: nazwa pliku obrazu bmp");
@@ -21,9 +22,7 @@ int main(int argc, char *argv[])
     }
 	path = argv[1];
 	
-	
-	
-	size = load_file_to_memory(path, &content);
+	size = load(path, &content);
 	headersize = *(content+14);
 	
 	if( headersize != 108)
@@ -33,54 +32,22 @@ int main(int argc, char *argv[])
 		printf("mamy %u!\n",headersize);
 		return 0;
 	}
-	bytes[0]=*(content+28);
-	bytes[1]=*(content+29);
 	
 	width = (int*)(content+18);
-	
-	if( *width < 0)
-	{
-		printf("nieprawidłowa szerokość obrazu!\n");
-		printf("oczekiwano wartości powyżej 0!\n");
-		printf("mamy %d!\n",*width);
-		return 0;
-	}
-	printf("Szerokość: %d\n",*width);
-	
 	hight=(int*)(content+22);
-	if( *hight < 0)
-	{
-		printf("nieprawidłowa wysokość obrazu!\n");
-		printf("oczekiwano wartości powyżej 0!\n");
-		printf("mamy %d!\n",*hight);
-		return 0;
-	}
-	printf("Wysokość: %d\n",*hight);
-	
-	bpp = *(content+28);
-	if( bpp != 1)
-	{
-		printf("nieprawidłowa rozdzielczość pikseli!\n");
-		printf("oczekiwano wartości 8 bpp!\n");
-		printf("mamy %hi!\n",bpp);
-		return 0;
-	}
-	
-	
 	int htmp=(*hight);
 	int wtmp=(*width);
 
-	
 	//int mirrorbmp1(void* image,int width,int hight);
 	unsigned int r=mirrorbmp1((content+headersize),wtmp,htmp);
-    //printf("eax=%s\n",byte_to_binary(r));
+    printf("eax=%s\n",int2bin(r, buffer, BUF_SIZE - 1));
 	printf("eax=%d\n",r);
-	save_file_from_memory(size, &content);
+	save(size, &content);
 	return 0;
 }
 
 
-int load_file_to_memory(char *filename, char **result) 
+int load(char *filename, char **result) 
 { 
 	int size = 0;
 	FILE *f = fopen(filename, "rb");
@@ -109,22 +76,22 @@ int load_file_to_memory(char *filename, char **result)
 	(*result)[size] = 0;
 	return size;
 }
+char *int2bin(int a, char *buffer, int buf_size) {
+    buffer += (buf_size - 1);
+	int i=31;
+    for (i; i >= 0; i--) {
+        *buffer-- = (a & 1) + '0';
 
-const char *byte_to_binary(int x)
-{
-    static char b[9];
-    b[0] = '\0';
-
-    int z;
-    for (z = 128; z > 0; z >>= 1)
-    {
-        strcat(b, ((x & z) == z) ? "1" : "0");
+        a >>= 1;
     }
 
-    return b;
+    return buffer;
 }
 
-int save_file_from_memory(int size, char **content)
+#define BUF_SIZE 33
+
+
+int save(int size, char **content)
 {
 		FILE *ptr_fp;
 		if((ptr_fp = fopen("mirror.bmp", "wb")) == NULL)

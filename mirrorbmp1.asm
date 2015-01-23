@@ -5,7 +5,7 @@ mirrorbmp1:
     push    ebp ; zapamiętanie wskaźnika ramki procedury wołającej
     mov     ebp, esp ; ustanowienie własnego wskaźnika ramki
 ; procedura nie alokuje danych lokalnych na stosie
-    sub     esp,4 ; adress początku najwiekszej liczby [ebp-8]
+    sub     esp,16
 ; zwalnianie rejestrów
     push    ebx    
     push    esi
@@ -22,54 +22,107 @@ mirrorbmp1:
 	mov		esi,[ebp+16] ; pobieram wysokosc obrazka
 	mov		eax,[ebp+12] ; pobieram szerokosc obrazka
 	
+	
 ;======= Wyliczenie ile potworzen na jeden wiersz
 	mov		ecx,32
-	div		ecx
+	div 	ecx
 	cmp		edx,0
 	je		go
 	inc		eax
 go:
-	mov		[ebp-4],eax
-;======= Wyliczenie ostatniego wiersza 
-	mov		edx,0
-	mul		esi
-	mov		ecx,4
-	mul		ecx
+	shl		eax,2
 	mov		edi,eax
-	
-	mov		edx,0
-	mov		eax,[ebp-4]
-	mov		ecx,4
-	mul		ecx
-	sub		edi,eax
-	mov		edx,eax
 ;======= Przygotowanie do pętli
-
-	mov		ecx,[ebp-4]
 	mov		ebx,[ebp+8]	; pobieram pierwszy parametr wskaźnik obrazu
-	add		ebx,22
-	add		edi,ebx
-	mov		eax,0
+	add		ebx,22		
+	mov		ecx,ebx;	
+	add		ecx,eax
+	sub		ecx,4
+	mov		[ebp-8],ebx
+	mov		[ebp-16],ecx
+
+;======= Pętla	 ebx - lewa strona, ecx - prawa strona
+
+lop_inner:
+	mov		eax,[ecx]
+	mov 	edx,eax
+	shr		eax,1
+	and 	edx,055555555h
+	and 	eax,055555555h
+	lea 	eax,[2*edx+eax]
+	mov 	edx,eax
+	shr 	eax,2
+	and 	edx,033333333h
+	and 	eax,033333333h
+	lea 	eax,[4*edx+eax]
+	mov 	edx,eax
+	shr 	eax,4
+	and		edx,0F0F0F0Fh
+	and 	eax,0F0F0F0Fh
+	shl 	edx,4
+	add 	eax,edx
+	bswap 	eax
 	
-;======= Pętla
-		
-lop:
-	mov		eax,[ebx]	; uzyte: eax,ebx,esi,edi,ecx,edx
-	mov		esi,[edi]	
-	mov		[edi],eax	
-	mov		[ebx],esi
+	mov		edx,[ebx]
+	mov		[ebx],eax
+	mov		eax,edx
+	
+	shr		eax,1
+	and 	edx,055555555h
+	and 	eax,055555555h
+	lea 	eax,[2*edx+eax]
+	mov 	edx,eax
+	shr 	eax,2
+	and 	edx,033333333h
+	and 	eax,033333333h
+	lea 	eax,[4*edx+eax]
+	mov 	edx,eax
+	shr 	eax,4
+	and		edx,0F0F0F0Fh
+	and 	eax,0F0F0F0Fh
+	shl 	edx,4
+	add 	eax,edx
+	bswap 	eax
+	mov		[ecx],eax
 	add		ebx,4
-	add		edi,4
-	dec		ecx
-	cmp		ecx,0
-	ja		lop
-	sub		edi,edx
-	sub		edi,edx
-	mov		ecx,[ebp-4]
-	cmp		ebx,edi
-	jbe		lop
-	jmp		end
-; epilog
+	sub		ecx,4
+	cmp		ebx,ecx
+	jb		lop_inner
+	je		middleWord
+	
+lop_outsite:
+	dec		esi
+	cmp		esi,0
+	je		end
+	mov		ebx,[ebp-8]
+	mov		ecx,[ebp-16]
+	add		ebx,edi
+	add		ecx,edi
+	mov		[ebp-8],ebx
+	mov		[ebp-16],ecx
+	jmp		lop_inner
+	
+	
+middleWord:
+	mov		eax,[ecx]
+	mov 	edx,eax
+	shr		eax,1
+	and 	edx,055555555h
+	and 	eax,055555555h
+	lea 	eax,[2*edx+eax]
+	mov 	edx,eax
+	shr 	eax,2
+	and 	edx,033333333h
+	and 	eax,033333333h
+	lea 	eax,[4*edx+eax]
+	mov 	edx,eax
+	shr 	eax,4
+	and		edx,0F0F0F0Fh
+	and 	eax,0F0F0F0Fh
+	shl 	edx,4
+	add 	eax,edx
+	bswap 	eax
+	jmp		lop_outsite
 end:
 ;   przywrucenie rejestrow
     pop     edi
